@@ -24,29 +24,40 @@ options = trainingOptions('sgdm','InitialLearnRate', 0.001,'MaxEpochs',5 , ...
 testpreds = classify(newnet,test_ds)
 testpreds2 = classify(newnet,small_test_ds)
 
-
-[NUM,TXT,RAW]=xlsread('C:\Users\user\Desktop\程式語言\DeepLearning\database\test.csv')
+%% output
+table = readtable('C:\Users\user\Desktop\程式語言\DeepLearning\database\test.csv','ReadVariableNames', true, 'Delimiter',',');
+%%
 j=2
+C = categorical([0,1,2,3,4,5])
 for i=1:3162
-    buf = strsplit(test_ds.Files{i},'\')
-    if buf{9} == TXT{j}
-        if testpreds{j}==testpreds(6)
-            TXT{10143+1+j}='0'
-        elseif testpreds{j}==testpreds(2)
-            TXT{10143+1+j}='1'
-        elseif testpreds{j}==testpreds(1)
-            TXT{10143+1+j}='2'
-        elseif testpreds{j}==testpreds(10)
-            TXT{10143+1+j}='3'
-        elseif testpreds{j}==testpreds(12)
-            TXT{10143+1+j}='4'
-        elseif testpreds{j}==testpreds(4)
-            TXT{10143+1+j}='5'
-        end
+    test_array = strsplit(test_ds.Files{i},'\');
+    test_filename = test_array{9};
+    table_array=table{j,1};
+    table_filename = table_array{1,1};
+    while ~strcmp(test_filename , table_filename)
         j=j+1;
+        table_array=table{j,1};
+        table_filename = table_array{1,1};
     end
+    if testpreds(i)==C(1)
+        cel={'0'};
+    elseif testpreds(i)==C(2)
+        cel={'1'};
+    elseif testpreds(i)==C(3)
+        cel={'2'};
+    elseif testpreds(i)==C(4)
+        cel={'3'};
+    elseif testpreds(i)==C(5)
+        cel={'4'};
+    elseif testpreds(i)==C(6)
+        cel={'5'};
+    end
+    table(j,2)=cel;
+    j=j+1;
 end
-writecell(TXT,'C:\Users\user\Desktop\程式語言\DeepLearning\database\test.csv')
+writetable(table,'C:\Users\user\Desktop\程式語言\DeepLearning\database\test.csv')
+%% output
+
 %writematrix(TXT,'C:\Users\user\Desktop\程式語言\DeepLearning\database\test.csv')
 %近來TXT，從1('ID')~10015迴圈，strsplit(test_ds.Files{3126},'\')的{9}為檔名，對照並寫值進入TXT(10143+1+i)
 %合併用cat(1,a,b)
